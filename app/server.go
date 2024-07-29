@@ -13,7 +13,7 @@ func main() {
 
 	// Uncomment this block to pass the first stage
 
-	l, err := net.Listen("tcp", "0.0.0.0:6379")
+	l, err := net.Listen("tcp", "0.0.0.0:6377")
 	if err != nil {
 		fmt.Println("Failed to bind to port 6379")
 		os.Exit(1)
@@ -24,7 +24,7 @@ func main() {
 		fmt.Println("Error accepting connection: ", err.Error())
 		os.Exit(1)
 	}
-	res, err := conn.Read(buf)
+	_, err = conn.Read(buf[:])
 	if err != nil {
 		fmt.Println("Error reading connection: ", err.Error())
 		os.Exit(1)
@@ -32,5 +32,5 @@ func main() {
 //	if(res==([]byte("PING"))){
 	conn.Write([]byte("+PONG\r\n"))
 //}
-	fmt.Println(res)
+	fmt.Println(string(buf))
 }
