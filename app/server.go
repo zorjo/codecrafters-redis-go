@@ -29,7 +29,7 @@ func main() {
 		fmt.Println("Error reading connection: ", err.Error())
 		os.Exit(1)
 	}
-	if(res==[]byte("PING")){
+	if(res==([]byte("PING"))){
 	conn.Write([]byte("+PONG\r\n"))
 }
 	fmt.Println(res)
