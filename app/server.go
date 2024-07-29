@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	// Uncomment this block to pass the first stage
+	"errors"
 	"net"
+	"io"
 	"os"
 )
 
@@ -18,13 +20,17 @@ func main() {
 		fmt.Println("Failed to bind to port 6379")
 		os.Exit(1)
 	}
-	buf:=make([]byte,128)
 	conn, err := l.Accept()
 	if err != nil {
 		fmt.Println("Error accepting connection: ", err.Error())
 		os.Exit(1)
 	}
+	for{
+	buf:=make([]byte,128)
 	_, err = conn.Read(buf[:])
+	if errors.Is(err, io.EOF) {
+	fmt.Println("Client closed the connections:", conn.RemoteAddr())
+	break}
 	if err != nil {
 		fmt.Println("Error reading connection: ", err.Error())
 		os.Exit(1)
@@ -32,5 +38,5 @@ func main() {
 //	if(res==([]byte("PING"))){
 	conn.Write([]byte("+PONG\r\n"))
 //}
-	fmt.Println(string(buf))
+	fmt.Println(string(buf))}
 }
