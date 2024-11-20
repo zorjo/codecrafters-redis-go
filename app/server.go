@@ -16,17 +16,26 @@ func main() {
 
 	l, err := net.Listen("tcp", "0.0.0.0:6379")
 	if err != nil {
-		fmt.Println("Failed to bind to port 6379")
+		fmt.Println("Failed to bind to port 6378")
 		os.Exit(1)
 	}
-	conn, err := l.Accept()
-	if err != nil {
-		fmt.Println("Error accepting connection: ", err.Error())
-		os.Exit(1)
+	defer l.Close()
+	for {
+		conn, err := l.Accept()
+		if err != nil {
+			fmt.Println("Error accepting connection: ", err.Error())
+			os.Exit(1)
+		}
+		go handleConnection(conn)
 	}
+}
+
+func handleConnection(conn net.Conn) {
+	// Implement the handling of the incoming connection
+	defer conn.Close()
 	for {
 		buf := make([]byte, 128)
-		_, err = conn.Read(buf[:])
+		_, err := conn.Read(buf[:])
 		if errors.Is(err, io.EOF) {
 			fmt.Println("Client closed the connections:", conn.RemoteAddr())
 			break
