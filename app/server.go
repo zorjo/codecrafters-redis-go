@@ -6,6 +6,9 @@ import (
 	"io"
 	"net"
 	"os"
+	"strconv"
+	"strings"
+	//"golang.org/x/text/cases"
 )
 
 func main() {
@@ -45,8 +48,37 @@ func handleConnection(conn net.Conn) {
 			os.Exit(1)
 		}
 		//	if(res==([]byte("PING"))){
-		conn.Write([]byte("+PONG\r\n"))
+		//conn.Write([]byte("+PONG\r\n"))
 		//}
-		fmt.Println(string(buf))
+		fmt.Println(strings.Fields(string(buf)))
+		v := strings.Fields(string(buf))
+		var command []string
+		if v[0][:1] == "*" {
+			length, _ := strconv.Atoi(v[0][1:])
+			for i := 0; i < length; i++ {
+				command = append(command, v[i*2+2])
+				fmt.Println(v[i*2+2])
+			}
+
+			fmt.Println(length, command)
+			switch command[0] {
+			case "PING":
+				conn.Write([]byte("+PONG\r\n"))
+			case "ECHO":
+				conn.Write([]byte("+" + command[1] + "\r\n"))
+			case "COMMAND":
+				conn.Write([]byte("+" + command[1] + "\r\n"))
+			}
+		}
 	}
 }
+
+/*func parseresp(message byte[]){
+	if message == []byte("PING"){
+		return []byte("+PONG\r\n")
+	}
+
+
+
+}
+*/
